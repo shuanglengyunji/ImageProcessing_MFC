@@ -19,6 +19,8 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
+	CWinThread* pThread1;
+	CWinThread* pThread2;
 
 // 实现
 protected:
@@ -36,5 +38,10 @@ public:
 	afx_msg void OnBnClickedFix2();
 
 	
+	CProgressCtrl m_process1;
+	CProgressCtrl m_process2;
 };
+
+UINT ThreadFunc1(LPVOID lpParam);
+UINT ThreadFunc2(LPVOID lpParam);
 

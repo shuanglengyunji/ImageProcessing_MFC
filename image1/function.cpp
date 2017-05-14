@@ -86,8 +86,11 @@ void Matrix_To_BMP(BITMAPINFO* pBmpInfo,BYTE* pBmpData,unsigned char *** c)
 	c = NULL;
 }
 
-void Fix1(unsigned char *** c,int height,int width)
+
+
+void Fix1(unsigned char *** c,int height,int width,LPVOID dlg)
 {
+
 	double *** r,*** s;
 	r = new double ** [height];	//申请c这个指针所对应的数组空间（一个biHeight长的数组）
 	for(int i=0;i<height;i++)
@@ -143,8 +146,9 @@ void Fix1(unsigned char *** c,int height,int width)
 	s = NULL;
 }
 
-void Fix2(unsigned char *** c,int height,int width)
+void Fix2(unsigned char *** c,int height,int width,LPVOID dlg)
 {
+
 	//转灰度算法
 	for(int y=0; y<height ; y++)		//从最后一行开始拷贝，拷贝到第一行为止（BMP格式是从最后一行开始存储的）
 	{
@@ -165,4 +169,3 @@ void Fix2(unsigned char *** c,int height,int width)
 		}
 	}
 }
-

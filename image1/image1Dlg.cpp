@@ -7,6 +7,7 @@
 #include "image1Dlg.h"
 #include "afxdialogex.h"
 #include "function.h"
+#include "filter.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,6 +24,8 @@ Cimage1Dlg::Cimage1Dlg(CWnd* pParent /*=NULL*/)
 void Cimage1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_PROGRESS1, m_process1);
+	DDX_Control(pDX, IDC_PROGRESS2, m_process2);
 }
 
 BEGIN_MESSAGE_MAP(Cimage1Dlg, CDialogEx)
@@ -249,7 +252,20 @@ void Cimage1Dlg::OnBnClickedOpen()
 void Cimage1Dlg::OnBnClickedFix1()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	pThread1 = AfxBeginThread(ThreadFunc1,this);
+}
 
+void Cimage1Dlg::OnBnClickedFix2()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	pThread2 = AfxBeginThread(ThreadFunc2,this);
+}
+
+
+
+UINT ThreadFunc1(LPVOID lpParam)  
+{  
+	Cimage1Dlg * dlg = (Cimage1Dlg *)lpParam;
 	//图像处理1
 
 	BYTE* pBmpData1;           //图像数据
@@ -258,19 +274,20 @@ void Cimage1Dlg::OnBnClickedFix1()
 
 	unsigned char *** c;	//图像数组指针
 	BMP_To_Matrix(pBmpInfo,pBmpData1,&c);
-	Fix1(c,pBmpInfo->bmiHeader.biHeight,pBmpInfo->bmiHeader.biWidth);
+	Fix1(c,pBmpInfo->bmiHeader.biHeight,pBmpInfo->bmiHeader.biWidth,dlg);
 	Matrix_To_BMP(pBmpInfo,pBmpData1,c);
 
-	Display(IDC_IMAGE_1OUT,pBmpInfo,pBmpData1);
+	dlg->Display(IDC_IMAGE_1OUT,pBmpInfo,pBmpData1);
 
 	delete[] pBmpData1;
 
+	return 0;  
 }
 
-void Cimage1Dlg::OnBnClickedFix2()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	
+UINT ThreadFunc2(LPVOID lpParam)  
+{  
+	Cimage1Dlg * dlg = (Cimage1Dlg *)lpParam;
+
 	//图像处理2
 
 	//把图片拷贝到一个新的空间下，用于做图像处理
@@ -280,16 +297,15 @@ void Cimage1Dlg::OnBnClickedFix2()
 
 	unsigned char *** c;	//图像数组指针
 	BMP_To_Matrix(pBmpInfo,pBmpData2,&c);
-	Fix2(c,pBmpInfo->bmiHeader.biHeight,pBmpInfo->bmiHeader.biWidth);
+	Fix2(c,pBmpInfo->bmiHeader.biHeight,pBmpInfo->bmiHeader.biWidth,dlg);
 	Matrix_To_BMP(pBmpInfo,pBmpData2,c);
 
-	Display(IDC_IMAGE_2OUT,pBmpInfo,pBmpData2);
+	dlg->Display(IDC_IMAGE_2OUT,pBmpInfo,pBmpData2);
 
 	delete[] pBmpData2;
-	//========================================================================================
 
+	return 0;  
 }
-
 
 //========================================================================================
 
