@@ -254,7 +254,7 @@ void Cimage1Dlg::OnBnClickedFix1()
 {
 	if (flag_fix1)
 	{
-		TerminateThread(pThread1, 1);
+		TerminateThread(pThread1,1);
 
 		SetDlgItemTextA(IDC_FIX1,"Í¼Ïñ´¦Àí1");
 		flag_fix1 = 0;
