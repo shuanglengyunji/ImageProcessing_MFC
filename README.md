@@ -1,0 +1,2 @@
+# ImageProcessing_MFC
+MFC框架搭建的简易图像处理测试程序
