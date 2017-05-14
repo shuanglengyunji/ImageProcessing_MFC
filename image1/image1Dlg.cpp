@@ -249,16 +249,38 @@ void Cimage1Dlg::OnBnClickedOpen()
 	}
 }
 
+int flag_fix1 = 0;
 void Cimage1Dlg::OnBnClickedFix1()
 {
+	if (flag_fix1)
+	{
+		TerminateThread(pThread1, 1);
+
+		SetDlgItemTextA(IDC_FIX1,"图像处理1");
+		flag_fix1 = 0;
+		return;
+	}
 	// TODO: 在此添加控件通知处理程序代码
 	pThread1 = AfxBeginThread(ThreadFunc1,this);
+	SetDlgItemTextA(IDC_FIX1,"停止处理");
+	flag_fix1 = 1;
 }
 
+int flag_fix2 = 0;
 void Cimage1Dlg::OnBnClickedFix2()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (flag_fix2)
+	{
+		TerminateThread(pThread2, 1);
+
+		SetDlgItemTextA(IDC_FIX1, "图像处理2");
+		flag_fix2 = 0;
+		return;
+	}
 	pThread2 = AfxBeginThread(ThreadFunc2,this);
+	SetDlgItemTextA(IDC_FIX2, "停止处理");
+	flag_fix1 = 1;
 }
 
 

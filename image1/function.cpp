@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "function.h"
 #include "filter.h"
+#include "math.h"
 
 /*
 * 24位真彩图图像数据存放：
@@ -120,9 +121,14 @@ void Fix1(unsigned char *** c,int height,int width,LPVOID dlg)
 	{
 		for(int x=0;x<width;x++)
 		{
-			c[y][x][0] = r[y][x][0];
-			c[y][x][1] = r[y][x][1];
-			c[y][x][2] = r[y][x][2];
+			int l,m,n;
+			l = sqrt(r[y][x][0]*r[y][x][0] + s[y][x][0]*s[y][x][0]);
+			m = sqrt(r[y][x][1]*r[y][x][1] + s[y][x][1]*s[y][x][1]);
+			n = sqrt(r[y][x][2]*r[y][x][2] + s[y][x][2]*s[y][x][2]);
+
+			if(l>255)	c[y][x][0]=255;		else	c[y][x][0]=l;
+			if(m>255)	c[y][x][1]=255;		else	c[y][x][1]=m;	
+			if(n>255)	c[y][x][2]=255;		else	c[y][x][2]=n;	
 		}
 	}
 
@@ -145,6 +151,7 @@ void Fix1(unsigned char *** c,int height,int width,LPVOID dlg)
 	delete[] s;//new和delete是成对出现的，这里也要多重循环释放掉空间
 	s = NULL;
 }
+
 
 void Fix2(unsigned char *** c,int height,int width,LPVOID dlg)
 {

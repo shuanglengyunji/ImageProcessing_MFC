@@ -2,6 +2,9 @@
 #include "math.h"
 #include "filter.h"
 
+extern int stopflag_1;
+extern int stopflag_2;
+
 void Forward_Fourier(unsigned char *** c,int w,int h,
 						double *** r,double *** i)
 {
