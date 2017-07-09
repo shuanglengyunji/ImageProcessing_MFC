@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "function.h"
 #include "math.h"
+#include "image_processing.h"
 
 /*
 * 24位真彩图图像数据存放：
@@ -148,7 +149,7 @@ void GrayMatrix_To_BMP(BITMAPINFO* pBmpInfo, BYTE* pBmpData, unsigned char ** c)
 	c = NULL;
 }
 
-void Fix1(unsigned char * c,int height,int width)
+void Fix1(unsigned char * c, double * pd1, double * pd2)
 {
-	
+	processing(c, pd1, pd2);
 }

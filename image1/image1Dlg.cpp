@@ -266,23 +266,24 @@ UINT ThreadFunc1(LPVOID lpParam)
 	pBmpData1 = (BYTE*)new char[dataBytes];
 	memcpy(pBmpData1,pBmpData,dataBytes);
 
+	double d1 = 0, d2 = 0;
+
 	//图像数组指针（c是三维图像矩阵指针）
 	unsigned char * c;
 
 	BMP_To_GrayMatrix(pBmpInfo,pBmpData1,&c);
-	Fix1(c, pBmpInfo->bmiHeader.biHeight, pBmpInfo->bmiHeader.biWidth);
+	Fix1(c, &d1, &d2);
 	GrayMatrix_To_BMP(pBmpInfo,pBmpData1,&c);
 
 	dlg->Display(IDC_IMAGE_1OUT,pBmpInfo,pBmpData1);
 	
 	//输出double数值
-	double d = -1.234;
 	char buffer1[30] = {0};
-	sprintf_s(buffer1, "%lf", d);
+	sprintf_s(buffer1, "%lf", d1);
 	dlg->GetDlgItem(IDC_NUM1)->SetWindowText(buffer1);
 
 	char buffer2[30] = { 0 };
-	sprintf_s(buffer2, "%lf", -d);
+	sprintf_s(buffer2, "%lf", d2);
 	dlg->GetDlgItem(IDC_NUM2)->SetWindowText(buffer2);
 
 	//dlg->SetDlgItemInt(IDC_NUM1, -465, 1);		//显示int（有符号）

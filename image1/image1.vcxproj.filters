@@ -16,6 +16,9 @@
     <Filter Include="工程文件">
       <UniqueIdentifier>{97a3234e-3720-437d-afc3-7da673272814}</UniqueIdentifier>
     </Filter>
+    <Filter Include="图像处理文件">
+      <UniqueIdentifier>{be065715-0a59-40ab-8ce0-3d4543f1fe5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -45,6 +48,9 @@
     <ClInclude Include="Resource.h">
       <Filter>工程文件</Filter>
     </ClInclude>
+    <ClInclude Include="image_processing.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="image1.cpp">
@@ -58,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>工程文件</Filter>
+    </ClCompile>
+    <ClCompile Include="image_processing.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
