@@ -99,7 +99,6 @@
     <None Include="res\image1.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="filter.h" />
     <ClInclude Include="function.h" />
     <ClInclude Include="image1.h" />
     <ClInclude Include="image1Dlg.h" />
@@ -108,7 +107,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="filter.cpp" />
     <ClCompile Include="function.cpp" />
     <ClCompile Include="image1.cpp" />
     <ClCompile Include="image1Dlg.cpp" />

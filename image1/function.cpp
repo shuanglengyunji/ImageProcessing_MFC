@@ -1,7 +1,6 @@
 
 #include "stdafx.h"
 #include "function.h"
-#include "filter.h"
 #include "math.h"
 
 /*
@@ -87,92 +86,69 @@ void Matrix_To_BMP(BITMAPINFO* pBmpInfo,BYTE* pBmpData,unsigned char *** c)
 	c = NULL;
 }
 
-
-
-void Fix1(unsigned char *** c,int height,int width,LPVOID dlg)
+//创建像素点矩阵c
+void BMP_To_GrayMatrix(BITMAPINFO* pBmpInfo, BYTE* pBmpData, unsigned char ** c)
 {
+	//开辟一维数组空间
+	(*c) = new unsigned char [pBmpInfo->bmiHeader.biHeight * pBmpInfo->bmiHeader.biWidth];
 
-	double *** r,*** s;
-	r = new double ** [height];	//申请c这个指针所对应的数组空间（一个biHeight长的数组）
-	for(int i=0;i<height;i++)
+	//计算每一行图像后面的无用字节数
+	int offset = pBmpInfo->bmiHeader.biWidth * 3 % 4;	//判断是不是4的倍数，若不是，应将最后的多出来的像素舍弃
+	if (offset == 0)offset = 4;
+
+	//从原图拷贝到像素矩阵中
+	for (int y = 0; y<pBmpInfo->bmiHeader.biHeight; y++)		//从最后一行开始拷贝，拷贝到第一行为止（BMP格式是从最后一行开始存储的）
 	{
-		r[i] = new double * [width];	//每一行对应一个char *指针数组
-		for(int j=0;j<width;j++)
+		for (int x = 0; x<pBmpInfo->bmiHeader.biWidth; x++)
 		{
-			r[i][j] = new double [3];
+			unsigned char R, G, B;
+			unsigned char Gray;
+
+			//从源数组读取像素点数据，写入到R G B三个变量中
+			B = pBmpData[y*(pBmpInfo->bmiHeader.biWidth * 3 + 4 - offset) + 3 * x];
+			G = pBmpData[y*(pBmpInfo->bmiHeader.biWidth * 3 + 4 - offset) + 3 * x + 1];
+			R = pBmpData[y*(pBmpInfo->bmiHeader.biWidth * 3 + 4 - offset) + 3 * x + 2];
+
+			Gray = (R * 299 + G * 587 + B * 114 + 500) / 1000;
+
+			//存入到定义的像素矩阵中
+			(*c)[y*pBmpInfo->bmiHeader.biWidth + x] = (unsigned char)Gray;
 		}
 	}
-
-	s = new double ** [height];	//申请c这个指针所对应的数组空间（一个biHeight长的数组）
-	for(int i=0;i<height;i++)
-	{
-		s[i] = new double * [width];	//每一行对应一个char *指针数组
-		for(int j=0;j<width;j++)
-		{
-			s[i][j] = new double [3];
-		}
-	}
-
-	Forward_Fourier(c,width,height,r,s);
-
-//	Backward_Fourier(r,s,height,width,c);
-
-	for(int y=0;y<height;y++)
-	{
-		for(int x=0;x<width;x++)
-		{
-			int l,m,n;
-			l = sqrt(r[y][x][0]*r[y][x][0] + s[y][x][0]*s[y][x][0]);
-			m = sqrt(r[y][x][1]*r[y][x][1] + s[y][x][1]*s[y][x][1]);
-			n = sqrt(r[y][x][2]*r[y][x][2] + s[y][x][2]*s[y][x][2]);
-
-			if(l>255)	c[y][x][0]=255;		else	c[y][x][0]=l;
-			if(m>255)	c[y][x][1]=255;		else	c[y][x][1]=m;	
-			if(n>255)	c[y][x][2]=255;		else	c[y][x][2]=n;	
-		}
-	}
-
-	for (int i=0;i<height;i++)
-	{
-		for (int j=0;j<width;j++)
-			delete[] r[i][j];
-		delete[] r[i];
-	}
-	delete[] r;//new和delete是成对出现的，这里也要多重循环释放掉空间
-	r = NULL;
-
-
-	for (int i=0;i<height;i++)
-	{
-		for (int j=0;j<width;j++)
-			delete[] s[i][j];
-		delete[] s[i];
-	}
-	delete[] s;//new和delete是成对出现的，这里也要多重循环释放掉空间
-	s = NULL;
 }
 
-
-void Fix2(unsigned char *** c,int height,int width,LPVOID dlg)
+//删除像素点矩阵c
+void GrayMatrix_To_BMP(BITMAPINFO* pBmpInfo, BYTE* pBmpData, unsigned char ** c)
 {
+	//计算每一行图像后面的无用字节数
+	int offset = pBmpInfo->bmiHeader.biWidth * 3 % 4;	//判断是不是4的倍数，若不是，应将最后的多出来的像素舍弃
+	if (offset == 0)offset = 4;
 
-	//转灰度算法
-	for(int y=0; y<height ; y++)		//从最后一行开始拷贝，拷贝到第一行为止（BMP格式是从最后一行开始存储的）
+	//从像素矩阵拷贝回原图
+	for (int y = 0; y<pBmpInfo->bmiHeader.biHeight; y++)		//从最后一行开始拷贝，拷贝到第一行为止（BMP格式是从最后一行开始存储的）
 	{
-		for(int x=0; x<width ; x++)
+		for (int x = 0; x<pBmpInfo->bmiHeader.biWidth; x++)
 		{
-			unsigned char B,G,R;
-			unsigned int Gray;
+			char R, G, B;
 
-			B = c[y][x][0];
-			G = c[y][x][1];
-			R = c[y][x][2];
+			//从像素矩阵取像素点数据，写入到R G B三个变量中
+			B = (*c)[y*pBmpInfo->bmiHeader.biWidth + x];
+			G = (*c)[y*pBmpInfo->bmiHeader.biWidth + x];
+			R = (*c)[y*pBmpInfo->bmiHeader.biWidth + x];
 
-			Gray = (R*299 + G*587 + B*114 + 500) / 1000;
-
-			c[y][x][0] = Gray;
-			c[y][x][1] = Gray;
-			c[y][x][2] = Gray;
+			//存入到定义的像素矩阵中
+			pBmpData[y*(pBmpInfo->bmiHeader.biWidth * 3 + 4 - offset) + 3 * x] = B;
+			pBmpData[y*(pBmpInfo->bmiHeader.biWidth * 3 + 4 - offset) + 3 * x + 1] = G;
+			pBmpData[y*(pBmpInfo->bmiHeader.biWidth * 3 + 4 - offset) + 3 * x + 2] = R;
 		}
 	}
+
+	//删除空间c
+	delete[] (*c);//new和delete是成对出现的，这里也要多重循环释放掉空间
+	c = NULL;
+}
+
+void Fix1(unsigned char * c,int height,int width)
+{
+	
 }

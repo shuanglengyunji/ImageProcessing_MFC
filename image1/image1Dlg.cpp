@@ -7,7 +7,7 @@
 #include "image1Dlg.h"
 #include "afxdialogex.h"
 #include "function.h"
-#include "filter.h"
+#include <stdio.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -26,7 +26,6 @@ BEGIN_MESSAGE_MAP(Cimage1Dlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(ID_OPEN, &Cimage1Dlg::OnBnClickedOpen)
 	ON_BN_CLICKED(IDC_FIX1, &Cimage1Dlg::OnBnClickedFix1)
-	ON_BN_CLICKED(IDC_FIX2, &Cimage1Dlg::OnBnClickedFix2)
 END_MESSAGE_MAP()
 
 
@@ -44,7 +43,17 @@ BOOL Cimage1Dlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 
 	GetDlgItem(IDC_FIX1)->EnableWindow(FALSE);
-	GetDlgItem(IDC_FIX2)->EnableWindow(FALSE);
+
+	//调整图像控件大小
+	CRect rect;
+
+	GetDlgItem(IDC_IMAGE_1OUT)->GetWindowRect(&rect);           //IDC_WAVE_DRAW为Picture Control的ID  
+	ScreenToClient(&rect);
+	GetDlgItem(IDC_IMAGE_1OUT)->MoveWindow(rect.left, rect.top, 200, 120, true);
+
+	GetDlgItem(IDC_IMAGE)->GetWindowRect(&rect);           //IDC_WAVE_DRAW为Picture Control的ID  
+	ScreenToClient(&rect);
+	GetDlgItem(IDC_IMAGE)->MoveWindow(rect.left, rect.top, 200, 120, true);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -217,7 +226,6 @@ void Cimage1Dlg::OnBnClickedOpen()
 		button_flag = 1;
 		SetDlgItemText(ID_OPEN,"关闭图片");
 		GetDlgItem(IDC_FIX1)->EnableWindow(TRUE);
-		GetDlgItem(IDC_FIX2)->EnableWindow(TRUE);
 	}
 	else
 	{
@@ -237,46 +245,17 @@ void Cimage1Dlg::OnBnClickedOpen()
 		button_flag = 0;
 		SetDlgItemText(ID_OPEN,"打开图片");
 		GetDlgItem(IDC_FIX1)->EnableWindow(FALSE);
-		GetDlgItem(IDC_FIX2)->EnableWindow(FALSE);
 
 	}
 }
 
-int flag_fix1 = 0;
-void Cimage1Dlg::OnBnClickedFix1()
+void Cimage1Dlg::OnBnClickedFix1()	//图像处理按钮
 {
-	if (flag_fix1)
-	{
-		TerminateThread(pThread1,1);
-
-		SetDlgItemTextA(IDC_FIX1,"图像处理1");
-		flag_fix1 = 0;
-		return;
-	}
 	// TODO: 在此添加控件通知处理程序代码
+
 	pThread1 = AfxBeginThread(ThreadFunc1,this);
-	SetDlgItemTextA(IDC_FIX1,"停止处理");
-	flag_fix1 = 1;
+
 }
-
-int flag_fix2 = 0;
-void Cimage1Dlg::OnBnClickedFix2()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (flag_fix2)
-	{
-		TerminateThread(pThread2, 1);
-
-		SetDlgItemTextA(IDC_FIX1, "图像处理2");
-		flag_fix2 = 0;
-		return;
-	}
-	pThread2 = AfxBeginThread(ThreadFunc2,this);
-	SetDlgItemTextA(IDC_FIX2, "停止处理");
-	flag_fix1 = 1;
-}
-
-
 
 UINT ThreadFunc1(LPVOID lpParam)
 {
@@ -285,43 +264,36 @@ UINT ThreadFunc1(LPVOID lpParam)
 
 	BYTE* pBmpData1;           //图像数据
 	pBmpData1 = (BYTE*)new char[dataBytes];
-	memcpy(pBmpData1,pBmpData,dataBytes);		
+	memcpy(pBmpData1,pBmpData,dataBytes);
 
-	unsigned char *** c;	//图像数组指针
-	BMP_To_Matrix(pBmpInfo,pBmpData1,&c);
-	Fix1(c,pBmpInfo->bmiHeader.biHeight,pBmpInfo->bmiHeader.biWidth,dlg);
-	Matrix_To_BMP(pBmpInfo,pBmpData1,c);
+	//图像数组指针（c是三维图像矩阵指针）
+	unsigned char * c;
+
+	BMP_To_GrayMatrix(pBmpInfo,pBmpData1,&c);
+	Fix1(c, pBmpInfo->bmiHeader.biHeight, pBmpInfo->bmiHeader.biWidth);
+	GrayMatrix_To_BMP(pBmpInfo,pBmpData1,&c);
 
 	dlg->Display(IDC_IMAGE_1OUT,pBmpInfo,pBmpData1);
+	
+	//输出double数值
+	double d = -1.234;
+	char buffer1[30] = {0};
+	sprintf_s(buffer1, "%lf", d);
+	dlg->GetDlgItem(IDC_NUM1)->SetWindowText(buffer1);
+
+	char buffer2[30] = { 0 };
+	sprintf_s(buffer2, "%lf", -d);
+	dlg->GetDlgItem(IDC_NUM2)->SetWindowText(buffer2);
+
+	//dlg->SetDlgItemInt(IDC_NUM1, -465, 1);		//显示int（有符号）
+	//dlg->SetDlgItemInt(IDC_NUM1, -465, 0);		//显示int（无符号）
 
 	delete[] pBmpData1;
 
 	return 0;  
 }
 
-UINT ThreadFunc2(LPVOID lpParam)  
-{  
-	Cimage1Dlg * dlg = (Cimage1Dlg *)lpParam;
-
-	//图像处理2
-
-	//把图片拷贝到一个新的空间下，用于做图像处理
-	BYTE* pBmpData2;           
-	pBmpData2 = (BYTE*)new char[dataBytes];
-	memcpy(pBmpData2,pBmpData,dataBytes);		
-
-	unsigned char *** c;	//图像数组指针
-	BMP_To_Matrix(pBmpInfo,pBmpData2,&c);
-	Fix2(c,pBmpInfo->bmiHeader.biHeight,pBmpInfo->bmiHeader.biWidth,dlg);
-	Matrix_To_BMP(pBmpInfo,pBmpData2,c);
-
-	dlg->Display(IDC_IMAGE_2OUT,pBmpInfo,pBmpData2);
-
-	delete[] pBmpData2;
-
-	return 0;  
-}
-
+//	
 //========================================================================================
 
 /*

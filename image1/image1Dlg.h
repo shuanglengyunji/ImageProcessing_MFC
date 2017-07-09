@@ -19,7 +19,6 @@ public:
 
 protected:
 	CWinThread* pThread1;
-	CWinThread* pThread2;
 
 // й╣ож
 protected:
@@ -33,13 +32,9 @@ protected:
 public:
 	afx_msg void OnBnClickedOpen();
 	afx_msg void OnBnClickedFix1();
-	afx_msg void OnBnClickedFix2();
-
 	
 	CProgressCtrl m_process1;
-	CProgressCtrl m_process2;
 };
 
 UINT ThreadFunc1(LPVOID lpParam);
-UINT ThreadFunc2(LPVOID lpParam);
 
