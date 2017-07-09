@@ -21,13 +21,6 @@ Cimage1Dlg::Cimage1Dlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void Cimage1Dlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_PROGRESS1, m_process1);
-	DDX_Control(pDX, IDC_PROGRESS2, m_process2);
-}
-
 BEGIN_MESSAGE_MAP(Cimage1Dlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -285,8 +278,8 @@ void Cimage1Dlg::OnBnClickedFix2()
 
 
 
-UINT ThreadFunc1(LPVOID lpParam)  
-{  
+UINT ThreadFunc1(LPVOID lpParam)
+{
 	Cimage1Dlg * dlg = (Cimage1Dlg *)lpParam;
 	//Í¼Ïñ´¦Àí1
 

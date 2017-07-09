@@ -18,7 +18,6 @@ public:
 	enum { IDD = IDD_IMAGE1_DIALOG };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV Ö§³Ö
 	CWinThread* pThread1;
 	CWinThread* pThread2;
 
@@ -33,7 +32,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOpen();
-	afx_msg void OnStnClickedNote1();
 	afx_msg void OnBnClickedFix1();
 	afx_msg void OnBnClickedFix2();
 
