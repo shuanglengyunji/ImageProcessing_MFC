@@ -44,6 +44,7 @@ void Image_Fix(void)	//图像算法
 		result_across_array[i] = (unsigned char)(tmp_array[i]);
 	}
 
+
 	////demo3 -- 列向量模式（懵逼模式）
 	////此模式启用__ACROSS_IMAGE宏定义
 	//length = 123.456;
